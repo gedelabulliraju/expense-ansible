@@ -1,0 +1,35 @@
+- name: mysql configuration
+  hosts: mysql
+  become: yes
+  vars:
+    mysql_root_password: "ExpenseApp@123"
+    login_host: mysql.buddymarket.shop
+  tasks:
+    - name: Install pymysql
+      ansible.builtin.pip:
+        name: PyMySQL
+        executable: pip3.9
+    - name: Install MySQL server
+      ansible.builtin.package:
+        name: mysql-server
+        state: present
+    - name: Start and enable MySQL service
+      ansible.builtin.service:
+        name: mysql
+        state: started
+        enabled: yes
+    - name: Set MySQL root password and authentication method
+      community.mysql.mysql_user:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        login_host: {{ login_host }}
+        ignore_errors: true
+        register: mysql_info
+
+    - name: Print MySQL user setup info
+      ansible.builtin.debug:
+        msg: "{{ mysql_info }}"
+
+    - name: Set MySQL root password
+      ansible.builtin.command: "mysql_secure_installation --set-root-pass {{ mysql_root_password }}"
+      when: mysql_info.failed is true
