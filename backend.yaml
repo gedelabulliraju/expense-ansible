@@ -2,7 +2,7 @@
   hosts: backend
   become: yes
   vars:
-    mysql_root_password: ExpenseApp@1
+    mysql_root_password: ExpenseApp@123
     login_host: mysql.buddymarket.shop
   tasks:
   - name: disable default nodejs
@@ -58,7 +58,7 @@
 
   - name: import mysql data
     community.mysql.mysql_db:
-      login_user: expense
+      login_user: root
       login_password: "{{ mysql_root_password }}"
       login_host: "{{ login_host }}"
       target: /app/schema/backend.sql
